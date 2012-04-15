@@ -7,7 +7,6 @@
 #define MAINWINDOW_H
 
 #include <QMainWindow>
-#include "newtaskdialog.h"
 
 class QLabel;
 class QListView;
@@ -22,6 +21,9 @@ class QGridLayout;
 class QDialog;
 class QwtPlot;
 class QwtPlotCurve;
+class QMessageBox;
+class newTaskDialog;
+class finddialog;
 
 class mainwindow : public QMainWindow
 {
@@ -43,6 +45,10 @@ private slots:
     void openRecentFile();
     void about_TaskMgr();
     void optionDisplay();
+    void finddialogs();
+    void findNext(const QString &text, Qt::CaseSensitivity);
+    void findPrevious(const QString &text, Qt::CaseSensitivity);
+
 private:
     void createActions();
     void createMenus();
@@ -51,6 +57,12 @@ private:
     void createContextMenu();
     void createWidgets();
     void readSettings();
+    void writeSettings();
+    bool loadFile(const QString &fileName);
+    void setCurrentFile(const QString &fileName);
+    bool readFile(const QString &fileName);
+    bool writefile(const QString &fileName);
+
     QLabel *locationLabel;
     QLabel *cpuCondition;
     QLabel *ramCondition;
@@ -66,7 +78,7 @@ private:
     QMenu *helpMenu;
     QMenu *toolsMenu;
     QStringList recentFiles;
-    QString cuiFile;
+    QString curFile;
     enum {MaxRecentFiles = 5};
     QAction *separatorAction;
     QAction *openAction;
@@ -79,16 +91,18 @@ private:
     QAction *aboutTaskMgrAction;
     QAction *exitAction;
     QAction *optionAction;
+    QAction *finddialogAction;
     QToolBar *fileToolBar;
     QToolBar *toolToolBar;
     QToolBar *helpToolBar;
+    QToolBar *optionToolBar;
     QDialog *centralDialog;
     QwtPlot *resourcePlot;
     QwtPlotCurve *cpuCurve;
     QwtPlotCurve *ramCurve;
     QwtPlotCurve *taskCurve;
-
     newTaskDialog *openedtaskDialog;
+    finddialog *finddialoging;
 };
 
 #endif // MAINWINDOW_H

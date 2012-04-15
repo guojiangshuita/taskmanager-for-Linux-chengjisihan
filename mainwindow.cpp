@@ -4,6 +4,7 @@
 #include "newtaskdialog.h"
 #include <QDialog>
 #include <iostream>
+#include "finddialog.h"
 
 
 using namespace std;
@@ -12,6 +13,8 @@ mainwindow::mainwindow()
 {
     spreadsheets = new spreadsheet;
     this->setGeometry(0, 0, 800, 600);
+    this->openedtaskDialog = 0;
+    this->finddialoging = 0;
     createActions();
     createMenus();
     createToolBar();
@@ -34,6 +37,11 @@ void mainwindow::createActions()
     saveAction->setShortcut(QKeySequence::Save);
     saveAction->setStatusTip(tr("Save a report"));
     connect(saveAction, SIGNAL(triggered()), this, SLOT(save()));
+    finddialogAction = new QAction(tr("&Find"), this);
+    finddialogAction->setIcon(QIcon("/home/claude/Icon/4308/3263"));
+    finddialogAction->setStatusTip(tr("Find the task"));
+    finddialogAction->setShortcut(tr("CTRL+F"));
+    connect(finddialogAction, SIGNAL(triggered()), this, SLOT(finddialogs()));
     measureMakerAction = new QAction(tr("&Measure Maker"), this);
     measureMakerAction->setShortcut(tr("CTRL+M"));
     measureMakerAction->setIcon(QIcon("/home/claude/Icon/4308/3257"));
@@ -74,7 +82,7 @@ void mainwindow::createActions()
     optionAction->setIcon(QIcon("/home/claude/Icon/4308/3260"));
     optionAction->setStatusTip(tr("Set the option"));
     optionAction->setShortcut(tr("CTRL+I"));
-    connect(optionAction, SLOT(trigger()), this, SLOT(optionDisplay()));
+    connect(optionAction, SIGNAL(triggered()), this, SLOT(optionDisplay()));
 }
 
 void mainwindow::createMenus()
@@ -84,6 +92,7 @@ void mainwindow::createMenus()
     fileMenu->addAction(newAction);
     fileMenu->addAction(openAction);
     fileMenu->addAction(saveAction);
+    fileMenu->addAction(finddialogAction);
     separatorAction = fileMenu->addSeparator();
     for(int i = 0; i < MaxRecentFiles; i++)
         fileMenu->addAction(recentFileActions[i]);
@@ -101,6 +110,7 @@ void mainwindow::createMenus()
 
 void mainwindow::createWidgets()
 {
+
     centralDialog = new QDialog;
     mainLayout = new QGridLayout;
     //this->mainLayout->setGeometry(QRect(50, 0, 700, 600));
@@ -135,8 +145,10 @@ void mainwindow::createWidgets()
     mainLayout->addWidget(kills, 23, 0, 1, 2);
     taskList = new QListView;
     taskList->setFlow(QListView::TopToBottom);
-    taskList->setModelColumn(4);
+
+    mainLayout->addWidget(taskList, 0, 2, 20, 5);
     centralDialog->setLayout(mainLayout);
+
 }
 
 void mainwindow::createStatusBar()
@@ -153,9 +165,12 @@ void mainwindow::createToolBar()
     fileToolBar->addAction(newAction);
     fileToolBar->addAction(openAction);
     fileToolBar->addAction(saveAction);
+    fileToolBar->addAction(finddialogAction);
     toolToolBar = addToolBar(tr("&Tools"));
     toolToolBar->addAction(measureMakerAction);
     toolToolBar->addAction(superKillerAction);
+    optionToolBar = addToolBar(tr("&Option"));
+    optionToolBar->addAction(optionAction);
     helpToolBar = addToolBar(tr("&Help"));
     helpToolBar->addAction(aboutAction);
     helpToolBar->addAction(aboutTaskMgrAction);
@@ -172,23 +187,60 @@ void mainwindow::newTask()
     {
         openedtaskDialog = new newTaskDialog(this);
     }
-    this->setEnabled(false);
     openedtaskDialog->show();
-    openedtaskDialog->setEnabled(true);
     openedtaskDialog->raise();
     openedtaskDialog->activateWindow();
-    this->setEnabled(true);
-    if(openedtaskDialog->closeEvent)
-        this->setEnabled(true);
 }
 
 void mainwindow::open()
 {
-
+    QString fileName = QFileDialog::getOpenFileName(this, tr("Open record"), ".", (tr("Record files (*.rd)")));
+    if(!fileName.isEmpty())
+        loadFile(fileName);
 }
+
+bool mainwindow::loadFile(const QString &fileName)
+{
+    if(!readFile(fileName))
+    {
+        statusBar()->showMessage(tr("Loading canceled"), 2000);
+        return false;
+    }
+    setCurrentFile(fileName);
+    statusBar()->showMessage(tr("File loaded"), 2000);
+    return true;
+}
+
+
+
+//set files name etc.
 
 void mainwindow::save()
 {
+
+}
+
+bool mainwindow::readFile(const QString &fileName)
+{
+
+}
+
+void mainwindow::finddialogs()
+{
+    if(!finddialoging)
+    {
+        finddialoging=new finddialog(this);
+        connect(finddialoging, SIGNAL(findNext(const QString &, Qt::CaseSensitivity)), this, SLOT(findNext(const QString &,Qt::CaseSensitivity)));
+        connect(finddialoging, SIGNAL(findPrevious(const QString &, Qt::CaseSensitivity)), this, SLOT(findPrevious(const QString &,Qt::CaseSensitivity)));
+    }
+    finddialoging->show();
+    finddialoging->raise();
+    finddialoging->activateWindow();
+}
+
+void mainwindow::setCurrentFile(const QString &fileName)
+{
+    curFile=fileName;
 
 }
 
@@ -197,10 +249,7 @@ void mainwindow::sorts()
 
 }
 
-void mainwindow::about()
-{
 
-}
 
 void mainwindow::measureMaker_activate()
 {
@@ -227,8 +276,34 @@ void mainwindow::optionDisplay()
 
 }
 
+
+
+void mainwindow::about()
+{
+    QMessageBox::about(this, tr("About TaskMGR"),
+                             tr("<h2>TaskMGR 1.0</h2>"
+                                "<p>Copyright &copy; 2011 Software Inc."
+                                "<p>TaskMGR is a small application that"
+                                "<p>can easily arrange the using of RAM condition"));
+}
+
 void mainwindow::readSettings()
 {
 
 }
 
+void mainwindow::findNext(const QString &text, Qt::CaseSensitivity)
+{
+
+}
+
+void mainwindow::findPrevious(const QString &text, Qt::CaseSensitivity)
+{
+
+}
+
+void mainwindow::writeSettings()
+{
+    QSettings settings("Software Inc.", "TaskMgr");
+    //settings.setValue();
+}
