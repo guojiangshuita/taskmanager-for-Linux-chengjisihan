@@ -1,10 +1,30 @@
-#include <QtGui>
-#include "mainwindow.h"
-#include "spreadsheet.h"
-#include "newtaskdialog.h"
 #include <QDialog>
 #include <iostream>
+#include <QLabel>
+#include <QPushButton>
+#include <QScrollBar>
+#include <QMenu>
+#include <QToolBar>
+#include <QAction>
+#include <QProgressBar>
+#include <QGridLayout>
+#include <QMessageBox>
+#include <QStandardItemModel>
+#include <QTableView>
+#include <QMenuBar>
+#include <QStatusBar>
+#include <QSettings>
+#include <QFileDialog>
+#include <QHeaderView>
+#include "mainwindow.h"
 #include "finddialog.h"
+#include "measuremaker.h"
+#include "superkiller.h"
+#include "spreadsheet.h"
+#include "newtaskdialog.h"
+
+
+
 
 
 using namespace std;
@@ -12,7 +32,7 @@ using namespace std;
 mainwindow::mainwindow()
 {
     spreadsheets = new spreadsheet;
-    this->setGeometry(0, 0, 800, 600);
+    this->setGeometry(0, 0, 455, 600);
     this->openedtaskDialog = 0;
     this->finddialoging = 0;
     createActions();
@@ -143,12 +163,46 @@ void mainwindow::createWidgets()
     mainLayout->addWidget(ramCondition,21, 1, 1, 1);
     mainLayout->addWidget(kill, 22, 0, 1, 2);
     mainLayout->addWidget(kills, 23, 0, 1, 2);
-    taskList = new QListView;
-    taskList->setFlow(QListView::TopToBottom);
-
-    mainLayout->addWidget(taskList, 0, 2, 20, 5);
+    taskTable = new QTableView(this);
+    taskTable->setEditTriggers(QAbstractItemView::NoEditTriggers);
+    //set the none editing mode
+    taskTable->setSelectionBehavior( QAbstractItemView::SelectRows);
+    taskTable->setSelectionMode( QAbstractItemView::SingleSelection);
+    //choose only one line at one time
+    setTableView();
+    mainLayout->addWidget(taskTable, 0, 2, 20, 5);
     centralDialog->setLayout(mainLayout);
 
+}
+
+void mainwindow::setTableView()
+{
+    model = new QStandardItemModel(taskTable);
+    model->setColumnCount(3);
+    model->setHeaderData(0,Qt::Horizontal,"   Tasks   ");
+    model->setHeaderData(1,Qt::Horizontal,"   RAM   ");
+    model->setHeaderData(2,Qt::Horizontal,"   CPU   ");
+    headerView = taskTable->horizontalHeader();
+    connect(headerView, SIGNAL(sectionClicked(int)),taskTable,SLOT(sortByColumn(int)));
+    loadTasks();
+    taskTable->setModel(model);
+}
+
+void mainwindow::loadTasks()
+{
+    model->setRowCount(countTheTask());
+    for(int i = 0; i < countTheTask(); i++)
+    {
+        //input sth can get the task name and
+        //the condition of RAM and CPU
+    }
+}
+
+int mainwindow::countTheTask()
+{
+    return 20;
+    //this is the test mode and you will add something
+    //useful here
 }
 
 void mainwindow::createStatusBar()

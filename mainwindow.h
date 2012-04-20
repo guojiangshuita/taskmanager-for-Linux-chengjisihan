@@ -8,6 +8,7 @@
 
 #include <QMainWindow>
 
+
 class QLabel;
 class QListView;
 class QPushButton;
@@ -24,6 +25,10 @@ class QwtPlotCurve;
 class QMessageBox;
 class newTaskDialog;
 class finddialog;
+class QStandardItemModel;
+class QTableView;
+class QHeaderView;
+class QwtPlotCurve;
 
 class mainwindow : public QMainWindow
 {
@@ -62,12 +67,17 @@ private:
     void setCurrentFile(const QString &fileName);
     bool readFile(const QString &fileName);
     bool writefile(const QString &fileName);
+    int countTheTask();
+    void setTableView();
+    void loadTasks();
 
     QLabel *locationLabel;
     QLabel *cpuCondition;
     QLabel *ramCondition;
     QGridLayout *mainLayout;
-    QListView *taskList;
+    QTableView *taskTable;
+    QHeaderView *headerView;
+    QStandardItemModel *model;
     QPushButton *kill;
     QPushButton *kills;
     QProgressBar *cpuPersentage;
