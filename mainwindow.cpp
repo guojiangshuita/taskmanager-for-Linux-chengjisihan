@@ -2,7 +2,7 @@
 #include <iostream>
 #include <QLabel>
 #include <QPushButton>
-#include <QScrollBar>
+//#include <QScrollBar>
 #include <QMenu>
 #include <QToolBar>
 #include <QAction>
@@ -16,6 +16,8 @@
 #include <QSettings>
 #include <QFileDialog>
 #include <QHeaderView>
+#include <qtextstream.h>
+#include <QFile>
 #include "mainwindow.h"
 #include "finddialog.h"
 #include "measuremaker.h"
@@ -27,14 +29,18 @@
 
 
 
+
+
 using namespace std;
 
 mainwindow::mainwindow()
 {
     spreadsheets = new spreadsheet;
-    this->setGeometry(0, 0, 455, 600);
+    this->setGeometry(0, 0, 700, 600);
     this->openedtaskDialog = 0;
     this->finddialoging = 0;
+    saveConditionFlags='N';
+//    initInfo();
     createActions();
     createMenus();
     createToolBar();
@@ -105,6 +111,7 @@ void mainwindow::createActions()
     connect(optionAction, SIGNAL(triggered()), this, SLOT(optionDisplay()));
 }
 
+
 void mainwindow::createMenus()
 {
 
@@ -153,16 +160,16 @@ void mainwindow::createWidgets()
     ramPersentage->setTextDirection(QProgressBar::BottomToTop);
     ramPersentage->setOrientation(Qt::Vertical);
     //set value here
-    kill = new QPushButton(tr("Kill1"));
+    kill = new QPushButton(tr("Kill a task"));
     kill->setEnabled(false);
-    kills = new QPushButton(tr("Kill2"));
-    kills->setEnabled(false);
-    mainLayout->addWidget(cpuPersentage,0, 0, 20, 1);
-    mainLayout->addWidget(ramPersentage, 0, 1, 20, 1);
-    mainLayout->addWidget(cpuCondition,21, 0, 1, 1);
+    refreshTask = new QPushButton(tr("Refresh"));
+    refreshTask->setEnabled(false);
+    mainLayout->addWidget(cpuPersentage,0, 0, 10, 1);
+    mainLayout->addWidget(ramPersentage, 0, 1, 10, 1);
+    mainLayout->addWidget(cpuCondition,11, 0, 1, 1);
     mainLayout->addWidget(ramCondition,21, 1, 1, 1);
     mainLayout->addWidget(kill, 22, 0, 1, 2);
-    mainLayout->addWidget(kills, 23, 0, 1, 2);
+    mainLayout->addWidget(refreshTask, 23, 0, 1, 2);
     taskTable = new QTableView(this);
     taskTable->setEditTriggers(QAbstractItemView::NoEditTriggers);
     //set the none editing mode
@@ -170,7 +177,7 @@ void mainwindow::createWidgets()
     taskTable->setSelectionMode( QAbstractItemView::SingleSelection);
     //choose only one line at one time
     setTableView();
-    mainLayout->addWidget(taskTable, 0, 2, 20, 5);
+    mainLayout->addWidget(taskTable, 0, 2, 24, 5);
     centralDialog->setLayout(mainLayout);
 
 }
@@ -178,10 +185,11 @@ void mainwindow::createWidgets()
 void mainwindow::setTableView()
 {
     model = new QStandardItemModel(taskTable);
-    model->setColumnCount(3);
-    model->setHeaderData(0,Qt::Horizontal,"   Tasks   ");
+    model->setColumnCount(4);
+    model->setHeaderData(0,Qt::Horizontal,"   PID   ");
     model->setHeaderData(1,Qt::Horizontal,"   RAM   ");
     model->setHeaderData(2,Qt::Horizontal,"   CPU   ");
+    model->setHeaderData(3,Qt::Horizontal,"   PATH   ");
     headerView = taskTable->horizontalHeader();
     connect(headerView, SIGNAL(sectionClicked(int)),taskTable,SLOT(sortByColumn(int)));
     loadTasks();
@@ -190,6 +198,73 @@ void mainwindow::setTableView()
 
 void mainwindow::loadTasks()
 {
+    //about 4 count need to be get
+    int index = 4;
+    QFile meminfo("/proc/meminfo");
+    QFile maps("/proc/self/maps");
+    QFile statm("/proc/self/statm");
+    QTextStream memStream(&meminfo);
+    QTextStream mapsStream(&maps);
+    QTextStream statmStream(&statm);
+    if(!meminfo.open(QFile::ReadOnly|QFile::Text))
+    {
+        std::cout<< "Open failure" << endl;
+        exit(-1);
+    }
+    else
+    {
+        QString s = memStream.readLine();
+        if(s.startsWith("MemTotal:"))
+        {
+            index--;
+            s.replace("MemTotal:","");
+            s.replace(" ","");
+            s.replace("kB","");
+            ramTotal = s.toInt();
+            std::cout<<ramTotal<< endl;
+        }
+        while(!memStream.atEnd()&&index!=0)
+        {
+            s = memStream.readLine();
+            if(s.startsWith("MemFree:"))
+            {
+                index--;
+                s.replace("MemFree:","");
+                s.replace(" ","");
+                s.replace("kB","");
+                ramFree = s.toInt();
+                std::cout<<ramFree<<endl;
+                continue;
+            }
+            else if(s.startsWith("SwapTotal:"))
+            {
+                index--;
+                s.replace("SwapTotal:","");
+                s.replace(" ","");
+                s.replace("kB","");
+                swapTotal = s.toInt();
+                std::cout<<swapTotal<<endl;
+                continue;
+            }
+            else if(s.startsWith("SwapFree:"))
+            {
+                index--;
+                s.replace("SwapFree:","");
+                s.replace(" ","");
+                s.replace("kB","");
+                swapFree = s.toInt();
+                std::cout<<swapFree<<endl;
+                continue;
+            }
+        }
+    }
+    ramUsed = ramTotal-ramFree;
+    swapUsed = swapTotal-swapFree;
+
+    if(!maps.open((QFile::ReadOnly|QFile::Text)))
+    {
+
+    }
     model->setRowCount(countTheTask());
     for(int i = 0; i < countTheTask(); i++)
     {
@@ -262,6 +337,7 @@ bool mainwindow::loadFile(const QString &fileName)
     }
     setCurrentFile(fileName);
     statusBar()->showMessage(tr("File loaded"), 2000);
+    saveConditionFlags='L';
     return true;
 }
 
@@ -307,6 +383,12 @@ void mainwindow::sorts()
 
 void mainwindow::measureMaker_activate()
 {
+    mMSet=new measureMaker(this);
+    if(saveConditionFlags=='L')
+    {
+        mMSet->setInputFiles(curFile);
+        mMSet->show();
+    }
 
 }
 

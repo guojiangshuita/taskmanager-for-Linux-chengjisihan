@@ -12,7 +12,7 @@
 class QLabel;
 class QListView;
 class QPushButton;
-class QScrollBar;
+//class QScrollBar;
 class QMenu;
 class QToolBar;
 class QAction;
@@ -28,7 +28,9 @@ class finddialog;
 class QStandardItemModel;
 class QTableView;
 class QHeaderView;
-class QwtPlotCurve;
+class QString;
+class measureMaker;
+class QFile;
 
 class mainwindow : public QMainWindow
 {
@@ -70,16 +72,28 @@ private:
     int countTheTask();
     void setTableView();
     void loadTasks();
+    void initInfo();
 
     QLabel *locationLabel;
     QLabel *cpuCondition;
     QLabel *ramCondition;
+    QLabel *swapCondition;
+    QLabel *cpuUsedCondition;
+    QLabel *ramUsedCondition;
+    QLabel *cpuFreeCondition;
+    QLabel *ramFreeCondition;
+    QLabel *cpuTotalCondition;
+    QLabel *ramTotalConditon;
+    QLabel *swapUsedCondition;
+    QLabel *swapFreeCondition;
+    QLabel *swapTotalCondition;
+    int cpuUsed, cpuTotal, cpuFree, ramUsed, ramTotal, ramFree, swapUsed, swapFree, swapTotal;
     QGridLayout *mainLayout;
     QTableView *taskTable;
     QHeaderView *headerView;
     QStandardItemModel *model;
     QPushButton *kill;
-    QPushButton *kills;
+    QPushButton *refreshTask;
     QProgressBar *cpuPersentage;
     QProgressBar *ramPersentage;
     spreadsheet *spreadsheets;
@@ -113,6 +127,9 @@ private:
     QwtPlotCurve *taskCurve;
     newTaskDialog *openedtaskDialog;
     finddialog *finddialoging;
+    QString *fileName;
+    measureMaker *mMSet;
+    char saveConditionFlags;
 };
 
 #endif // MAINWINDOW_H
