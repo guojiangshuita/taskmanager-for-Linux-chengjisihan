@@ -198,6 +198,7 @@ void mainwindow::setTableView()
 
 void mainwindow::loadTasks()
 {
+<<<<<<< HEAD
     int a0 = 0, a1 = 0, b0 = 0, b1 = 0;
     //about 4 count need to be get
     int index = 4;
@@ -207,6 +208,20 @@ void mainwindow::loadTasks()
     if(!meminfo.open(QFile::ReadOnly|QFile::Text))
     {
         QMessageBox::warning(this, tr("warning"), tr(" meminfo文件打不开！"),QMessageBox::Yes);
+=======
+    //about 4 count need to be get
+    int index = 4;
+    QFile meminfo("/proc/meminfo");
+    QFile maps("/proc/self/maps");
+    QFile statm("/proc/self/statm");
+    QTextStream memStream(&meminfo);
+    QTextStream mapsStream(&maps);
+    QTextStream statmStream(&statm);
+    if(!meminfo.open(QFile::ReadOnly|QFile::Text))
+    {
+        std::cout<< "Open failure" << endl;
+        exit(-1);
+>>>>>>> d9853fec76e4176d3c83b2f34e4ea6d40d6a9c8a
     }
     else
     {
@@ -218,6 +233,10 @@ void mainwindow::loadTasks()
             s.replace(" ","");
             s.replace("kB","");
             ramTotal = s.toInt();
+<<<<<<< HEAD
+=======
+            std::cout<<ramTotal<< endl;
+>>>>>>> d9853fec76e4176d3c83b2f34e4ea6d40d6a9c8a
         }
         while(!memStream.atEnd()&&index!=0)
         {
@@ -229,6 +248,10 @@ void mainwindow::loadTasks()
                 s.replace(" ","");
                 s.replace("kB","");
                 ramFree = s.toInt();
+<<<<<<< HEAD
+=======
+                std::cout<<ramFree<<endl;
+>>>>>>> d9853fec76e4176d3c83b2f34e4ea6d40d6a9c8a
                 continue;
             }
             else if(s.startsWith("SwapTotal:"))
@@ -238,6 +261,10 @@ void mainwindow::loadTasks()
                 s.replace(" ","");
                 s.replace("kB","");
                 swapTotal = s.toInt();
+<<<<<<< HEAD
+=======
+                std::cout<<swapTotal<<endl;
+>>>>>>> d9853fec76e4176d3c83b2f34e4ea6d40d6a9c8a
                 continue;
             }
             else if(s.startsWith("SwapFree:"))
@@ -247,10 +274,15 @@ void mainwindow::loadTasks()
                 s.replace(" ","");
                 s.replace("kB","");
                 swapFree = s.toInt();
+<<<<<<< HEAD
+=======
+                std::cout<<swapFree<<endl;
+>>>>>>> d9853fec76e4176d3c83b2f34e4ea6d40d6a9c8a
                 continue;
             }
         }
     }
+<<<<<<< HEAD
     //close the meminfo
     ramUsed = ramTotal-ramFree;
     swapUsed = swapTotal-swapFree;
@@ -331,6 +363,15 @@ void mainwindow::loadTasks()
     stat.close(); //关闭stat文件
 
 
+=======
+    ramUsed = ramTotal-ramFree;
+    swapUsed = swapTotal-swapFree;
+
+    if(!maps.open((QFile::ReadOnly|QFile::Text)))
+    {
+
+    }
+>>>>>>> d9853fec76e4176d3c83b2f34e4ea6d40d6a9c8a
     model->setRowCount(countTheTask());
     for(int i = 0; i < countTheTask(); i++)
     {
