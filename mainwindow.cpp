@@ -206,8 +206,6 @@ void mainwindow::setTableView()
 
 void mainwindow::loadTasks()
 {
-<<<<<<< HEAD
-    int a0 = 0, a1 = 0, b0 = 0, b1 = 0;
     //about 4 count need to be get
     int index = 4;
     QFile meminfo("/proc/meminfo");
@@ -215,22 +213,7 @@ void mainwindow::loadTasks()
     QTextStream memStream(&meminfo);
     if(!meminfo.open(QFile::ReadOnly|QFile::Text))
     {
-        QMessageBox::warning(this, tr("warning"), tr(" meminfo文件打不开！"),QMessageBox::Yes);
-=======
-    //about 4 count need to be get
-    int index = 4;
-    QFile meminfo("/proc/meminfo");
-    QFile stat("/proc/stat");
-    QTextStream memStream(&meminfo);
-    if(!meminfo.open(QFile::ReadOnly|QFile::Text))
-    {
-<<<<<<< HEAD
         QMessageBox::warning(this, tr("warning"), tr(" meminfo open failure！"),QMessageBox::Yes);
-=======
-        std::cout<< "Open failure" << endl;
-        exit(-1);
->>>>>>> d9853fec76e4176d3c83b2f34e4ea6d40d6a9c8a
->>>>>>> 1402bdd6c78841f0804d3085a046febcbe8d104d
     }
     else
     {
@@ -242,13 +225,6 @@ void mainwindow::loadTasks()
             s.replace(" ","");
             s.replace("kB","");
             ramTotal = s.toInt();
-<<<<<<< HEAD
-=======
-<<<<<<< HEAD
-=======
-            std::cout<<ramTotal<< endl;
->>>>>>> d9853fec76e4176d3c83b2f34e4ea6d40d6a9c8a
->>>>>>> 1402bdd6c78841f0804d3085a046febcbe8d104d
         }
         while(!memStream.atEnd()&&index!=0)
         {
@@ -260,13 +236,6 @@ void mainwindow::loadTasks()
                 s.replace(" ","");
                 s.replace("kB","");
                 ramFree = s.toInt();
-<<<<<<< HEAD
-=======
-<<<<<<< HEAD
-=======
-                std::cout<<ramFree<<endl;
->>>>>>> d9853fec76e4176d3c83b2f34e4ea6d40d6a9c8a
->>>>>>> 1402bdd6c78841f0804d3085a046febcbe8d104d
                 continue;
             }
             else if(s.startsWith("SwapTotal:"))
@@ -276,13 +245,6 @@ void mainwindow::loadTasks()
                 s.replace(" ","");
                 s.replace("kB","");
                 swapTotal = s.toInt();
-<<<<<<< HEAD
-=======
-<<<<<<< HEAD
-=======
-                std::cout<<swapTotal<<endl;
->>>>>>> d9853fec76e4176d3c83b2f34e4ea6d40d6a9c8a
->>>>>>> 1402bdd6c78841f0804d3085a046febcbe8d104d
                 continue;
             }
             else if(s.startsWith("SwapFree:"))
@@ -292,103 +254,11 @@ void mainwindow::loadTasks()
                 s.replace(" ","");
                 s.replace("kB","");
                 swapFree = s.toInt();
-<<<<<<< HEAD
-=======
-<<<<<<< HEAD
-=======
-                std::cout<<swapFree<<endl;
->>>>>>> d9853fec76e4176d3c83b2f34e4ea6d40d6a9c8a
->>>>>>> 1402bdd6c78841f0804d3085a046febcbe8d104d
                 continue;
             }
         }
     }
-<<<<<<< HEAD
     //close the meminfo
-=======
-<<<<<<< HEAD
-    //close the meminfo
-    ramUsed = ramTotal-ramFree;
-    swapUsed = swapTotal-swapFree;
-    meminfo.close();
-
-    //about the condition of cpu
-
-    int tt = 2;
-    int cpuInfo[2][7];
-    int cpuTotal[2][2];
-    QString tempStr;
-    while (tt)
-    {
-        stat.setFileName("/proc/stat");
-        if ( !stat.open(QIODevice::ReadOnly) )
-        {
-            QMessageBox::warning(this, tr("warning"), tr(" stat文件打不开！"),QMessageBox::Yes);
-            return ;
-        }
-        tempStr = stat.readLine();
-        for (int i = 0; i < 7; i++)
-        {
-            cpuInfo[2-tt][i] = tempStr.section(" ", i+1, i+1).toInt();
-            cpuTotal[1][2-tt] += cpuInfo[2-tt][i];
-            if (i == 3)
-            {
-                cpuTotal[0][2-tt] += cpuInfo[2-tt][i];
-            }
-        }
-        tt--;
-        stat.close();
-    }
-
-    int a = cpuTotal[0][1] - cpuTotal[0][0];
-    int b = cpuTotal[1][1] - cpuTotal[1][0];
-    if (a < 0)
-    {
-        a = -a;
-    }
-    if (b < 0)
-    {
-        b = -b;
-    }
-    cout << a << "      " << b << endl;
-
-    if ( !stat.open(QIODevice::ReadOnly) )
-    {
-        QMessageBox::warning(this, tr("warning"), tr("stat文件打不开！"), QMessageBox::Yes);
-        return;
-    }
-
-    tempStr = stat.readLine();
-    a0 = a1;
-    b0 = b1;
-    a1 = b1 = 0;
-    int gg;
-    for (int i = 0; i < 7; i++)
-    {
-        b1 += tempStr.section(" ", i+2, i+2).toInt();
-        gg = b1;
-        if (i == 3)
-        {
-            a1 += tempStr.section(" ", i+2, i+2).toInt();
-        }
-    }
-    int m, n;
-    m = a1 - a0;
-    n = b1 - b0;
-    if (m < 0)
-    {
-        m = -m;
-    }
-    if (n < 0)
-    {
-        n = -n;
-    }
-    cout << (n-m)*100/n << endl;
-    stat.close(); //关闭stat文件
-
-
-=======
->>>>>>> 1402bdd6c78841f0804d3085a046febcbe8d104d
     ramUsed = ramTotal-ramFree;
     swapUsed = swapTotal-swapFree;
     meminfo.close();
@@ -457,7 +327,6 @@ void mainwindow::loadTasks()
         }
         cpu_num++;
     }
-<<<<<<< HEAD
     stat.close();
 
     //clear the list of the tasks
@@ -533,11 +402,6 @@ void mainwindow::loadTasks()
 
     model->setRowCount(totalProNum);
     for(int i = 0; i < totalProNum-1; i++)
-=======
->>>>>>> d9853fec76e4176d3c83b2f34e4ea6d40d6a9c8a
-    model->setRowCount(countTheTask());
-    for(int i = 0; i < countTheTask(); i++)
->>>>>>> 1402bdd6c78841f0804d3085a046febcbe8d104d
     {
         //input sth can get the task name and
         //the condition of RAM and CPU
