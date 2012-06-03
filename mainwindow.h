@@ -69,7 +69,6 @@ private:
     void setCurrentFile(const QString &fileName);
     bool readFile(const QString &fileName);
     bool writefile(const QString &fileName);
-    int countTheTask();
     void setTableView();
     void loadTasks();
     void initInfo();
@@ -103,6 +102,7 @@ private:
     QMenu *toolsMenu;
     QStringList recentFiles;
     QString curFile;
+    int a0, a1, b0, b1;
     enum {MaxRecentFiles = 5};
     QAction *separatorAction;
     QAction *openAction;
