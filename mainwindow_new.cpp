@@ -18,9 +18,6 @@
 #include <QHeaderView>
 #include <qtextstream.h>
 #include <QFile>
-#include <QDir>
-#include <QVector>
-#include <sstream>
 #include "mainwindow.h"
 #include "finddialog.h"
 #include "measuremaker.h"
@@ -44,10 +41,6 @@ mainwindow::mainwindow()
     this->finddialoging = 0;
     saveConditionFlags='N';
 //    initInfo();
-    a0=0;
-    a1=0;
-    b0=0;
-    b1=0;
     createActions();
     createMenus();
     createToolBar();
@@ -192,12 +185,11 @@ void mainwindow::createWidgets()
 void mainwindow::setTableView()
 {
     model = new QStandardItemModel(taskTable);
-    model->clear();
     model->setColumnCount(4);
     model->setHeaderData(0,Qt::Horizontal,"   PID   ");
     model->setHeaderData(1,Qt::Horizontal,"   RAM   ");
     model->setHeaderData(2,Qt::Horizontal,"   CPU   ");
-    model->setHeaderData(3,Qt::Horizontal,"   NAME   ");
+    model->setHeaderData(3,Qt::Horizontal,"   PATH   ");
     headerView = taskTable->horizontalHeader();
     connect(headerView, SIGNAL(sectionClicked(int)),taskTable,SLOT(sortByColumn(int)));
     loadTasks();
@@ -206,7 +198,6 @@ void mainwindow::setTableView()
 
 void mainwindow::loadTasks()
 {
-<<<<<<< HEAD
     int a0 = 0, a1 = 0, b0 = 0, b1 = 0;
     //about 4 count need to be get
     int index = 4;
@@ -216,21 +207,6 @@ void mainwindow::loadTasks()
     if(!meminfo.open(QFile::ReadOnly|QFile::Text))
     {
         QMessageBox::warning(this, tr("warning"), tr(" meminfo文件打不开！"),QMessageBox::Yes);
-=======
-    //about 4 count need to be get
-    int index = 4;
-    QFile meminfo("/proc/meminfo");
-    QFile stat("/proc/stat");
-    QTextStream memStream(&meminfo);
-    if(!meminfo.open(QFile::ReadOnly|QFile::Text))
-    {
-<<<<<<< HEAD
-        QMessageBox::warning(this, tr("warning"), tr(" meminfo open failure！"),QMessageBox::Yes);
-=======
-        std::cout<< "Open failure" << endl;
-        exit(-1);
->>>>>>> d9853fec76e4176d3c83b2f34e4ea6d40d6a9c8a
->>>>>>> 1402bdd6c78841f0804d3085a046febcbe8d104d
     }
     else
     {
@@ -242,13 +218,6 @@ void mainwindow::loadTasks()
             s.replace(" ","");
             s.replace("kB","");
             ramTotal = s.toInt();
-<<<<<<< HEAD
-=======
-<<<<<<< HEAD
-=======
-            std::cout<<ramTotal<< endl;
->>>>>>> d9853fec76e4176d3c83b2f34e4ea6d40d6a9c8a
->>>>>>> 1402bdd6c78841f0804d3085a046febcbe8d104d
         }
         while(!memStream.atEnd()&&index!=0)
         {
@@ -260,13 +229,6 @@ void mainwindow::loadTasks()
                 s.replace(" ","");
                 s.replace("kB","");
                 ramFree = s.toInt();
-<<<<<<< HEAD
-=======
-<<<<<<< HEAD
-=======
-                std::cout<<ramFree<<endl;
->>>>>>> d9853fec76e4176d3c83b2f34e4ea6d40d6a9c8a
->>>>>>> 1402bdd6c78841f0804d3085a046febcbe8d104d
                 continue;
             }
             else if(s.startsWith("SwapTotal:"))
@@ -276,13 +238,6 @@ void mainwindow::loadTasks()
                 s.replace(" ","");
                 s.replace("kB","");
                 swapTotal = s.toInt();
-<<<<<<< HEAD
-=======
-<<<<<<< HEAD
-=======
-                std::cout<<swapTotal<<endl;
->>>>>>> d9853fec76e4176d3c83b2f34e4ea6d40d6a9c8a
->>>>>>> 1402bdd6c78841f0804d3085a046febcbe8d104d
                 continue;
             }
             else if(s.startsWith("SwapFree:"))
@@ -292,21 +247,10 @@ void mainwindow::loadTasks()
                 s.replace(" ","");
                 s.replace("kB","");
                 swapFree = s.toInt();
-<<<<<<< HEAD
-=======
-<<<<<<< HEAD
-=======
-                std::cout<<swapFree<<endl;
->>>>>>> d9853fec76e4176d3c83b2f34e4ea6d40d6a9c8a
->>>>>>> 1402bdd6c78841f0804d3085a046febcbe8d104d
                 continue;
             }
         }
     }
-<<<<<<< HEAD
-    //close the meminfo
-=======
-<<<<<<< HEAD
     //close the meminfo
     ramUsed = ramTotal-ramFree;
     swapUsed = swapTotal-swapFree;
@@ -387,174 +331,20 @@ void mainwindow::loadTasks()
     stat.close(); //关闭stat文件
 
 
-=======
->>>>>>> 1402bdd6c78841f0804d3085a046febcbe8d104d
-    ramUsed = ramTotal-ramFree;
-    swapUsed = swapTotal-swapFree;
-    meminfo.close();
-
-    //about the condition of cpu
-
-    int tt = 2;
-    int cpuInfo[2][7];
-    int cpuTotal[2][2];
-    int cpus[10];
-    QString tempStr;
-    while (tt)
-    {
-        stat.setFileName("/proc/stat");
-        if ( !stat.open(QIODevice::ReadOnly) )
-        {
-            QMessageBox::warning(this, tr("warning"), tr(" stat open failure！"),QMessageBox::Yes);
-            return ;
-        }
-        tempStr = stat.readLine();
-        for (int i = 0; i < 7; i++)
-        {
-            cpuInfo[2-tt][i] = tempStr.section(" ", i+1, i+1).toInt();
-            //count the total
-            cpuTotal[1][2-tt] += cpuInfo[2-tt][i];
-            if (i == 3)
-            {
-                //about the idel
-                cpuTotal[0][2-tt] += cpuInfo[2-tt][i];
-            }
-        }
-        tt--;
-        stat.close();
-    }
-//    total_0=USER[0]+NICE[0]+SYSTEM[0]+IDLE[0]+IOWAIT[0]+IRQ[0]+SOFTIRQ[0]
-//    total_1=USER[1]+NICE[1]+SYSTEM[1]+IDLE[1]+IOWAIT[1]+IRQ[1]+SOFTIRQ[1]
-//    cpu usage=(IDLE[0]-IDLE[1]) / (total_0-total_1) * 100
-
-    int a = cpuTotal[0][1] - cpuTotal[0][0];
-    int b = cpuTotal[1][1] - cpuTotal[1][0];
-    if (a < 0)
-        a = -a;
-    if (b < 0)
-        b = -b;
-
-
-    if ( !stat.open(QIODevice::ReadOnly) )
-    {
-        QMessageBox::warning(this, tr("warning"), tr("stat open failure！"), QMessageBox::Yes);
-        return;
-    }
-
-    tempStr = stat.readLine();
-    cout << tempStr.toStdString();
-    int cpu_num = 0;
-    while(true)
-    {
-        tempStr = stat.readLine();
-        if(tempStr.left(3)!="cpu")
-            break;
-        for (int i = 0; i < 7; i++)
-        {
-            cpus[cpu_num] += tempStr.section(" ", i+1, i+1).toInt();
-            //count the total
-
-        }
-        cpu_num++;
-    }
-<<<<<<< HEAD
-    stat.close();
-
-    //clear the list of the tasks
-
-    //model->clear();
-    QDir tasks("/proc");
-    QStringList tasksList = tasks.entryList();
-    QString taskString = tasksList.join("\n");
-    QString id_of_pro;
-    bool ok;
-    int find_start = 3;
-    int nProPid;
-    int number_of_sleep = 0, number_of_run = 0, number_of_zombie = 0;
-    int totalProNum = 0;
-    QString proName;
-    QString proState;
-    QString proPri;
-    QString proMem;
-    QVector <QString> proNameList;
-    QVector <QString> pidList;
-    QVector <QString> proPriList;
-    QVector <QString> proMemList;
-    QVector <int> proCPUList;
-    while(1)
-    {
-
-        a = taskString.indexOf("\n", find_start);
-        b = taskString.indexOf("\n", a+1);
-        find_start = b;
-        //a, b-a-1, b
-        id_of_pro = taskString.mid(a+1, b-a-1);
-        pidList.append(id_of_pro);
-        totalProNum++;
-        //make sure whether is the pid
-        nProPid = id_of_pro.toInt(&ok, 10);
-        //pid stops, break!
-        if(!ok)
-            break;
-        stat.setFileName("/proc/" + id_of_pro + "/stat");
-        if ( !stat.open(QIODevice::ReadOnly) )
-        {
-            QMessageBox::warning(this, tr("warning"), tr("The pid stat file can not open!"), QMessageBox::Yes);
-            return;
-        }
-        tempStr = stat.readLine();
-        if (tempStr.length() == 0)
-            break;
-        a = tempStr.indexOf("(");
-        b = tempStr.indexOf(")");
-        proName = tempStr.mid(a+1, b-a-1);
-        //delete the blanks
-        proName.trimmed();
-        proState = tempStr.section(" ", 2, 2);
-        proPri = tempStr.section(" ", 17, 17);
-        proMem = tempStr.section(" ", 22, 22);
-        int stime = tempStr.section(" ", 14, 14).toInt();
-        int utime = tempStr.section(" ", 13, 13).toInt();
-        int cs = tempStr.section(" ", 15, 15).toInt() + tempStr.section(" ", 16, 16).toInt();
-        proPriList.append(proPri);
-        proMemList.append(proMem);
-        proNameList.append(proName);
-        proCPUList.append(100*(stime+utime+cs)/cpus[tempStr.section(" ", 40, 40).toInt()]);
-
-        switch ( proState.at(0).toLatin1() )
-        {
-            case 'S':   number_of_sleep++; break; //Sleep
-            case 'R':   number_of_run++; break; //Running
-            case 'Z':   number_of_zombie++; break; //Zombie
-            default :   break;
-        }
-    }
-
-
-    model->setRowCount(totalProNum);
-    for(int i = 0; i < totalProNum-1; i++)
-=======
->>>>>>> d9853fec76e4176d3c83b2f34e4ea6d40d6a9c8a
     model->setRowCount(countTheTask());
     for(int i = 0; i < countTheTask(); i++)
->>>>>>> 1402bdd6c78841f0804d3085a046febcbe8d104d
     {
         //input sth can get the task name and
         //the condition of RAM and CPU
-        QStandardItem *itemPid = new QStandardItem(pidList[i]);
-        model->setItem(i, 0, itemPid);
-        QStandardItem *itemRam = new QStandardItem(proMemList[i]);
-        model->setItem(i, 1, itemRam);
-        QString ss = QString::number(proCPUList[i],10);
-        QStandardItem *itemCPU = new QStandardItem(ss);
-        model->setItem(i, 2, itemCPU);
-        QStandardItem *itemName = new QStandardItem(proNameList[i]);
-        model->setItem(i, 3, itemName);
     }
-
-
 }
 
+int mainwindow::countTheTask()
+{
+    return 20;
+    //this is the test mode and you will add something
+    //useful here
+}
 
 void mainwindow::createStatusBar()
 {
