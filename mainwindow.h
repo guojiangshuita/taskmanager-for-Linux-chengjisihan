@@ -38,6 +38,7 @@ class mainwindow : public QMainWindow
 
 public:
     mainwindow();
+    virtual ~mainwindow();
 //protected:
 //    void closeEvent(QCloseEvent *event);
 private slots:
@@ -55,7 +56,9 @@ private slots:
     void finddialogs();
     void findNext(const QString &text, Qt::CaseSensitivity);
     void findPrevious(const QString &text, Qt::CaseSensitivity);
-
+protected:
+    void timerEvent(QTimerEvent *event);
+    int m_nTimerId;
 private:
     void createActions();
     void createMenus();
@@ -69,7 +72,6 @@ private:
     void setCurrentFile(const QString &fileName);
     bool readFile(const QString &fileName);
     bool writefile(const QString &fileName);
-    int countTheTask();
     void setTableView();
     void loadTasks();
     void initInfo();
@@ -78,15 +80,18 @@ private:
     QLabel *cpuCondition;
     QLabel *ramCondition;
     QLabel *swapCondition;
-    QLabel *cpuUsedCondition;
+    QLabel *cpuUserCondition;
     QLabel *ramUsedCondition;
-    QLabel *cpuFreeCondition;
+    QLabel *cpuSyCondition;
     QLabel *ramFreeCondition;
-    QLabel *cpuTotalCondition;
-    QLabel *ramTotalConditon;
+    QLabel *cpuNiCondition;
+    QLabel *ramTotalCondition;
     QLabel *swapUsedCondition;
     QLabel *swapFreeCondition;
     QLabel *swapTotalCondition;
+    QLabel *zombiesCondition;
+    QLabel *sleepsCondition;
+    QLabel *runsCondition;
     int cpuUsed, cpuTotal, cpuFree, ramUsed, ramTotal, ramFree, swapUsed, swapFree, swapTotal;
     QGridLayout *mainLayout;
     QTableView *taskTable;
@@ -103,6 +108,7 @@ private:
     QMenu *toolsMenu;
     QStringList recentFiles;
     QString curFile;
+    int a0, a1, b0, b1, c0, c1, d0, d1, e0, e1;
     enum {MaxRecentFiles = 5};
     QAction *separatorAction;
     QAction *openAction;
