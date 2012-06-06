@@ -108,7 +108,11 @@ private:
     QMenu *toolsMenu;
     QStringList recentFiles;
     QString curFile;
+<<<<<<< HEAD
     int a0, a1, b0, b1, c0, c1, d0, d1, e0, e1;
+=======
+    int a0, a1, b0, b1;
+>>>>>>> c4cb18203d79d67a6c7bbce2a5c45a083edf87a8
     enum {MaxRecentFiles = 5};
     QAction *separatorAction;
     QAction *openAction;

@@ -27,7 +27,6 @@
 #include "superkiller.h"
 #include "spreadsheet.h"
 #include "newtaskdialog.h"
-#include <math.h>
 
 
 
@@ -40,7 +39,7 @@ using namespace std;
 mainwindow::mainwindow()
 {
     spreadsheets = new spreadsheet;
-    this->setGeometry(0, 0, 762, 600);
+    this->setGeometry(0, 0, 700, 600);
     this->openedtaskDialog = 0;
     this->finddialoging = 0;
     saveConditionFlags='N';
@@ -49,15 +48,6 @@ mainwindow::mainwindow()
     a1=0;
     b0=0;
     b1=0;
-<<<<<<< HEAD
-    c0=0;
-    c1=0;
-    d0=0;
-    d1=0;
-    e0=0;
-    e1=0;
-=======
->>>>>>> c4cb18203d79d67a6c7bbce2a5c45a083edf87a8
     createActions();
     createMenus();
     createToolBar();
@@ -170,19 +160,6 @@ void mainwindow::createWidgets()
     cpuPersentage->setTextDirection(QProgressBar::BottomToTop);
     cpuPersentage->text();
     cpuPersentage->setOrientation(Qt::Vertical);
-    cpuUserCondition = new QLabel(tr("CPU(user):"));
-    ramUsedCondition = new QLabel(tr("Ram used:"));
-    swapUsedCondition = new QLabel(tr("swap used:"));
-    cpuSyCondition = new QLabel(tr("CPU(sy):"));
-    cpuNiCondition = new QLabel(tr("CPU(ni):"));
-    ramFreeCondition = new QLabel(tr("Ram free:"));
-    swapFreeCondition = new QLabel(tr("swap free:"));
-    ramTotalCondition = new QLabel(tr("Ram total:"));
-    swapTotalCondition = new QLabel(tr("swap total:"));
-    zombiesCondition = new QLabel(tr("Zombies:"));
-    sleepsCondition = new QLabel(tr("Sleeps:"));
-    runsCondition = new QLabel(tr("Running:"));
-
     ramPersentage = new QProgressBar;
     ramPersentage->setMaximum(100);
     ramPersentage->setMinimum(0);
@@ -197,22 +174,9 @@ void mainwindow::createWidgets()
     mainLayout->addWidget(cpuPersentage,0, 0, 10, 1);
     mainLayout->addWidget(ramPersentage, 0, 1, 10, 1);
     mainLayout->addWidget(cpuCondition,11, 0, 1, 1);
-    mainLayout->addWidget(ramCondition,11, 1, 1, 1);
+    mainLayout->addWidget(ramCondition,21, 1, 1, 1);
     mainLayout->addWidget(kill, 22, 0, 1, 2);
     mainLayout->addWidget(refreshTask, 23, 0, 1, 2);
-    mainLayout->addWidget(cpuUserCondition, 21, 2, 1, 2);
-    mainLayout->addWidget(cpuSyCondition, 22, 2, 1, 2);
-    mainLayout->addWidget(cpuNiCondition, 23, 2, 1, 2);
-    mainLayout->addWidget(ramUsedCondition, 21, 3, 1, 2);
-    mainLayout->addWidget(ramFreeCondition, 22, 3, 1, 2);
-    mainLayout->addWidget(ramTotalCondition, 23, 3, 1, 2);
-    mainLayout->addWidget(swapUsedCondition, 21, 5, 1, 2);
-    mainLayout->addWidget(swapFreeCondition, 22, 5, 1, 2);
-    mainLayout->addWidget(swapTotalCondition, 23, 5, 1, 2);
-    mainLayout->addWidget(zombiesCondition, 12, 0, 1, 2);
-    mainLayout->addWidget(runsCondition, 13, 0, 1, 2);
-    mainLayout->addWidget(sleepsCondition, 14, 0, 1, 2);
-
     taskTable = new QTableView(this);
     taskTable->setEditTriggers(QAbstractItemView::NoEditTriggers);
     //set the none editing mode
@@ -220,30 +184,20 @@ void mainwindow::createWidgets()
     taskTable->setSelectionMode( QAbstractItemView::SingleSelection);
     //choose only one line at one time
     setTableView();
-    m_nTimerId = startTimer(6000);
-    mainLayout->addWidget(taskTable, 0, 2, 20, 5);
+    mainLayout->addWidget(taskTable, 0, 2, 24, 5);
     centralDialog->setLayout(mainLayout);
+
 }
 
 void mainwindow::setTableView()
 {
     model = new QStandardItemModel(taskTable);
     model->clear();
-<<<<<<< HEAD
-    model->setColumnCount(6);
-    model->setHeaderData(0,Qt::Horizontal,"   NAME   ");
-    model->setHeaderData(1,Qt::Horizontal,"   RAM   ");
-    model->setHeaderData(2,Qt::Horizontal,"   CPU   ");
-    model->setHeaderData(3,Qt::Horizontal,"   PID   ");
-    model->setHeaderData(4,Qt::Horizontal,"   STATE   ");
-    model->setHeaderData(5,Qt::Horizontal,"   Priority   ");
-=======
     model->setColumnCount(4);
     model->setHeaderData(0,Qt::Horizontal,"   PID   ");
     model->setHeaderData(1,Qt::Horizontal,"   RAM   ");
     model->setHeaderData(2,Qt::Horizontal,"   CPU   ");
     model->setHeaderData(3,Qt::Horizontal,"   NAME   ");
->>>>>>> c4cb18203d79d67a6c7bbce2a5c45a083edf87a8
     headerView = taskTable->horizontalHeader();
     connect(headerView, SIGNAL(sectionClicked(int)),taskTable,SLOT(sortByColumn(int)));
     loadTasks();
@@ -307,30 +261,17 @@ void mainwindow::loadTasks()
     //close the meminfo
     ramUsed = ramTotal-ramFree;
     swapUsed = swapTotal-swapFree;
-    ramPersentage->setValue(ramUsed*100/ramTotal);
-    ramPersentage->text();
-    ramUsedCondition->setText("Ram used: " + QString::number(ramUsed) + "KB");
-    ramFreeCondition->setText("Ram free: " + QString::number(ramFree) + "KB");
-    ramTotalCondition->setText("Ram total:" + QString::number(ramTotal) + "KB");
-    swapUsedCondition->setText("Swap used:" + QString::number(swapUsed) + "KB");
-    swapFreeCondition->setText("swap Free:" + QString::number(swapFree) + "KB");
-    swapTotalCondition->setText("swap free:" + QString::number(swapTotal) + "KB");
     meminfo.close();
 
     //about the condition of cpu
 
     int tt = 2;
-<<<<<<< HEAD
-    int cpuInfo[2][7]={0};
-    int cpuTotal[2][2]={0};
-    int cpus[10] = {0};
-
-=======
     int cpuInfo[2][7];
     int cpuTotal[2][2];
     int cpus[10];
->>>>>>> c4cb18203d79d67a6c7bbce2a5c45a083edf87a8
     QString tempStr;
+    while (tt)
+    {
         stat.setFileName("/proc/stat");
         if ( !stat.open(QIODevice::ReadOnly) )
         {
@@ -338,55 +279,8 @@ void mainwindow::loadTasks()
             return ;
         }
         tempStr = stat.readLine();
-        a0 = a1;
-        b0 = b1;
-        c0 = c1;
-        d0 = d1;
-        e0 = e1;
-        a1 = b1 = c1 = d1 = e1 = 0;
-        int gg;
         for (int i = 0; i < 7; i++)
         {
-<<<<<<< HEAD
-            b1 += tempStr.section(" ", i+2, i+2).toInt();
-            gg = b1;
-            cout << (tempStr.section(" ", i+2, i+2)).toStdString() << endl;
-            if (i == 0)
-            {
-                c1 += tempStr.section(" ", i+2, i+2).toInt();
-            }
-            else if(i == 1)
-            {
-                d1 += tempStr.section(" ", i+2, i+2).toInt();
-            }
-            else if(i == 2)
-            {
-                e1 += tempStr.section(" ", i+2, i+2).toInt();
-            }
-            if (i == 3)
-            {
-                a1 += tempStr.section(" ", i+2, i+2).toInt();
-            }
-        }
-        int m, n;
-        m = a1 - a0;
-        n = b1 - b0;
-        if (m < 0)
-        {
-            m = -m;
-        }
-        if (n < 0)
-        {
-            n = -n;
-        }
-        stat.close(); //关闭stat文件
-
-    cpuPersentage->setValue(100*(n-m)/n); 
-    cpuPersentage->text();
-    cpuUserCondition->setText("CPU(user):" + QString::number(abs((c1-c0)*100/n)) + "%");
-    cpuSyCondition->setText("CPU(Sy): " + QString::number(abs((e1-e0)*100/n)) + "%");
-    cpuNiCondition->setText("CPU(Ni): " + QString::number(abs((d1-d0)*100/n)) + "%");
-=======
             cpuInfo[2-tt][i] = tempStr.section(" ", i+1, i+1).toInt();
             //count the total
             cpuTotal[1][2-tt] += cpuInfo[2-tt][i];
@@ -410,7 +304,6 @@ void mainwindow::loadTasks()
     if (b < 0)
         b = -b;
 
->>>>>>> c4cb18203d79d67a6c7bbce2a5c45a083edf87a8
 
     if ( !stat.open(QIODevice::ReadOnly) )
     {
@@ -419,10 +312,7 @@ void mainwindow::loadTasks()
     }
 
     tempStr = stat.readLine();
-<<<<<<< HEAD
-=======
     cout << tempStr.toStdString();
->>>>>>> c4cb18203d79d67a6c7bbce2a5c45a083edf87a8
     int cpu_num = 0;
     while(true)
     {
@@ -433,10 +323,7 @@ void mainwindow::loadTasks()
         {
             cpus[cpu_num] += tempStr.section(" ", i+1, i+1).toInt();
             //count the total
-<<<<<<< HEAD
-=======
 
->>>>>>> c4cb18203d79d67a6c7bbce2a5c45a083edf87a8
         }
         cpu_num++;
     }
@@ -462,65 +349,6 @@ void mainwindow::loadTasks()
     QVector <QString> pidList;
     QVector <QString> proPriList;
     QVector <QString> proMemList;
-<<<<<<< HEAD
-    QVector <QString> proStateList;
-//    QVector <QString> ProPr
-    QVector <int> proCPUList;
-    int a, b;
-    while(1)
-    {
-
-        a = taskString.indexOf("\n", find_start);
-        b = taskString.indexOf("\n", a+1);
-        find_start = b;
-        //a, b-a-1, b
-        id_of_pro = taskString.mid(a+1, b-a-1);
-        pidList.append(id_of_pro);
-        totalProNum++;
-        //make sure whether is the pid
-        nProPid = id_of_pro.toInt(&ok, 10);
-        //pid stops, break!
-        if(!ok)
-            break;
-        stat.setFileName("/proc/" + id_of_pro + "/stat");
-        if ( !stat.open(QIODevice::ReadOnly) )
-        {
-            QMessageBox::warning(this, tr("warning"), tr("The pid stat file can not open!"), QMessageBox::Yes);
-            return;
-        }
-        tempStr = stat.readLine();
-        if (tempStr.length() == 0)
-            break;
-        a = tempStr.indexOf("(");
-        b = tempStr.indexOf(")");
-        proName = tempStr.mid(a+1, b-a-1);
-        //delete the blanks
-        proName.trimmed();
-        proState = tempStr.section(" ", 2, 2);
-        proPri = tempStr.section(" ", 17, 17);
-        proMem = tempStr.section(" ", 22, 22);
-        int stime = tempStr.section(" ", 14, 14).toInt();
-        int utime = tempStr.section(" ", 13, 13).toInt();
-        int cs = tempStr.section(" ", 15, 15).toInt() + tempStr.section(" ", 16, 16).toInt();
-        proPriList.append(proPri);
-        proMemList.append(proMem);
-        proNameList.append(proName);
-        proStateList.append(proState);
-        proCPUList.append(100*(stime+utime+cs)/cpus[tempStr.section(" ", 40, 40).toInt()]);
-
-        switch ( proState.at(0).toLatin1() )
-        {
-            case 'S':   number_of_sleep++; break; //Sleep
-            case 'R':   number_of_run++; break; //Running
-            case 'Z':   number_of_zombie++; break; //Zombie
-            default :   break;
-        }
-    }
-    zombiesCondition->setText("Zombies" + QString::number(number_of_zombie));
-    sleepsCondition->setText("Sleeps:" + QString::number(number_of_sleep));
-    runsCondition->setText("running:" + QString::number(number_of_run));
-
-=======
     QVector <int> proCPUList;
     while(1)
     {
@@ -572,35 +400,20 @@ void mainwindow::loadTasks()
     }
 
 
->>>>>>> c4cb18203d79d67a6c7bbce2a5c45a083edf87a8
     model->setRowCount(totalProNum);
     for(int i = 0; i < totalProNum-1; i++)
     {
         //input sth can get the task name and
         //the condition of RAM and CPU
-<<<<<<< HEAD
-        QStandardItem *itemName = new QStandardItem(proNameList[i]);
-        model->setItem(i, 0, itemName);
-=======
         QStandardItem *itemPid = new QStandardItem(pidList[i]);
         model->setItem(i, 0, itemPid);
->>>>>>> c4cb18203d79d67a6c7bbce2a5c45a083edf87a8
         QStandardItem *itemRam = new QStandardItem(proMemList[i]);
         model->setItem(i, 1, itemRam);
         QString ss = QString::number(proCPUList[i],10);
         QStandardItem *itemCPU = new QStandardItem(ss);
         model->setItem(i, 2, itemCPU);
-<<<<<<< HEAD
-        QStandardItem *itemPid = new QStandardItem(pidList[i]);
-        model->setItem(i, 3, itemPid);
-        QStandardItem *itemPri = new QStandardItem(proPriList[i]);
-        model->setItem(i, 4, itemPri);
-        QStandardItem *itemState = new QStandardItem(proStateList[i]);
-        model->setItem(i, 5, itemState);
-=======
         QStandardItem *itemName = new QStandardItem(proNameList[i]);
         model->setItem(i, 3, itemName);
->>>>>>> c4cb18203d79d67a6c7bbce2a5c45a083edf87a8
     }
 
 
@@ -769,14 +582,4 @@ void mainwindow::writeSettings()
 {
     QSettings settings("Software Inc.", "TaskMgr");
     //settings.setValue();
-}
-
-void mainwindow::timerEvent(QTimerEvent *event)
-{
-    loadTasks();
-}
-mainwindow::~mainwindow()
-{
-    if (m_nTimerId != 0 )
-        killTimer(m_nTimerId);
 }
