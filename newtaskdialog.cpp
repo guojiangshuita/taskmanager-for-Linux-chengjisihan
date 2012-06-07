@@ -1,5 +1,10 @@
 #include "newtaskdialog.h"
 #include <QtGui>
+#include <QUrl>
+#include <QDesktopServices>
+#include <QDir>
+#include <QFile>
+#include <QString>
 using namespace std;
 
 newTaskDialog::newTaskDialog(QWidget *parent) : QDialog(parent)
@@ -39,7 +44,9 @@ void newTaskDialog::newTasksClicked()
     judgeClose = true;
     if(findTask())
     {
+        QDir cur;
         taskName = new QString(newTaskEdit->text());
+        QDesktopServices::openUrl(QUrl::fromLocalFile(cur.absoluteFilePath(*taskName)));
         close();
     }
     else

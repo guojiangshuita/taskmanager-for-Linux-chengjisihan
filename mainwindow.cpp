@@ -27,6 +27,7 @@
 #include "superkiller.h"
 #include "spreadsheet.h"
 #include "newtaskdialog.h"
+#include <math.h>
 
 
 
@@ -39,7 +40,7 @@ using namespace std;
 mainwindow::mainwindow()
 {
     spreadsheets = new spreadsheet;
-    this->setGeometry(0, 0, 700, 600);
+    this->setGeometry(0, 0, 762, 600);
     this->openedtaskDialog = 0;
     this->finddialoging = 0;
     saveConditionFlags='N';
@@ -48,6 +49,12 @@ mainwindow::mainwindow()
     a1=0;
     b0=0;
     b1=0;
+    c0=0;
+    c1=0;
+    d0=0;
+    d1=0;
+    e0=0;
+    e1=0;
     createActions();
     createMenus();
     createToolBar();
@@ -61,32 +68,32 @@ mainwindow::mainwindow()
 void mainwindow::createActions()
 {
     openAction = new QAction(tr("&Open"), this);
-    openAction->setIcon(QIcon("/home/claude/Icon/4308/3267"));
+    openAction->setIcon(QIcon("./images/3267.png"));
     openAction->setShortcut(QKeySequence::Open);
     openAction->setStatusTip(tr("Open a report"));
     connect(openAction, SIGNAL(triggered()), this, SLOT(open()));
     saveAction = new QAction(tr("&Save"), this);
-    saveAction->setIcon(QIcon("/home/claude/Icon/4308/3261"));
+    saveAction->setIcon(QIcon("./images/3261"));
     saveAction->setShortcut(QKeySequence::Save);
     saveAction->setStatusTip(tr("Save a report"));
     connect(saveAction, SIGNAL(triggered()), this, SLOT(save()));
     finddialogAction = new QAction(tr("&Find"), this);
-    finddialogAction->setIcon(QIcon("/home/claude/Icon/4308/3263"));
+    finddialogAction->setIcon(QIcon("./images/3263"));
     finddialogAction->setStatusTip(tr("Find the task"));
     finddialogAction->setShortcut(tr("CTRL+F"));
     connect(finddialogAction, SIGNAL(triggered()), this, SLOT(finddialogs()));
     measureMakerAction = new QAction(tr("&Measure Maker"), this);
     measureMakerAction->setShortcut(tr("CTRL+M"));
-    measureMakerAction->setIcon(QIcon("/home/claude/Icon/4308/3257"));
+    measureMakerAction->setIcon(QIcon("./images/3257"));
     measureMakerAction->setStatusTip(tr("Activite the measuremaker"));
     connect(measureMakerAction,SIGNAL(triggered()),this,SLOT(measureMaker_activate()));
     superKillerAction = new QAction(tr("Super &Killer"), this);
     superKillerAction->setShortcut(tr("CTRL+K"));
     superKillerAction->setStatusTip(tr("Activate the superkiller"));
-    superKillerAction->setIcon(QIcon("/home/claude/Icon/4308/3264"));
+    superKillerAction->setIcon(QIcon("./images/3264"));
     connect(superKillerAction, SIGNAL(triggered()), this, SLOT(superKiller_activate()));
     newAction = new QAction(tr("&New"), this);
-    newAction->setIcon(QIcon("/home/claude/Icon/4308/3256"));
+    newAction->setIcon(QIcon("./images/3256"));
     newAction->setShortcut(tr("CTRL+N"));
     newAction->setStatusTip(tr("Create a new task"));
     connect(newAction, SIGNAL(triggered()),this, SLOT(newTask()));
@@ -97,13 +104,13 @@ void mainwindow::createActions()
         connect(recentFileActions[i], SIGNAL(triggered()), this, SLOT(openRecentFile()));
     }
     aboutAction = new QAction(tr("&About"), this);
-    aboutAction->setIcon(QIcon("/home/claude/Icon/4308/3258"));
+    aboutAction->setIcon(QIcon("./images/3258"));
     aboutAction->setShortcut(tr("CTRL+A"));
     aboutAction->setStatusTip(tr("See the information"));
     connect(aboutAction, SIGNAL(triggered()), this, SLOT(about()));
     aboutTaskMgrAction = new QAction(tr("About &TaskMgr"), this);
     aboutTaskMgrAction->setShortcut(tr("CTRL+G"));
-    aboutTaskMgrAction->setIcon(QIcon("/home/claude/Icon/4308/3259"));
+    aboutTaskMgrAction->setIcon(QIcon("./images/3259"));
     aboutTaskMgrAction->setStatusTip(tr("See the usage"));
     connect(aboutTaskMgrAction, SIGNAL(triggered()), this, SLOT(about_TaskMgr()));
     exitAction = new QAction(tr("&Exit"), this);
@@ -112,7 +119,7 @@ void mainwindow::createActions()
     exitAction->setShortcut(tr("CTRL+Q"));
     connect(exitAction, SIGNAL(triggered()), this, SLOT(close()));
     optionAction = new QAction(tr("Sett&ings"), this);
-    optionAction->setIcon(QIcon("/home/claude/Icon/4308/3260"));
+    optionAction->setIcon(QIcon("./images/3260"));
     optionAction->setStatusTip(tr("Set the option"));
     optionAction->setShortcut(tr("CTRL+I"));
     connect(optionAction, SIGNAL(triggered()), this, SLOT(optionDisplay()));
@@ -160,6 +167,19 @@ void mainwindow::createWidgets()
     cpuPersentage->setTextDirection(QProgressBar::BottomToTop);
     cpuPersentage->text();
     cpuPersentage->setOrientation(Qt::Vertical);
+    cpuUserCondition = new QLabel(tr("CPU(user):"));
+    ramUsedCondition = new QLabel(tr("Ram used:"));
+    swapUsedCondition = new QLabel(tr("swap used:"));
+    cpuSyCondition = new QLabel(tr("CPU(sy):"));
+    cpuNiCondition = new QLabel(tr("CPU(ni):"));
+    ramFreeCondition = new QLabel(tr("Ram free:"));
+    swapFreeCondition = new QLabel(tr("swap free:"));
+    ramTotalCondition = new QLabel(tr("Ram total:"));
+    swapTotalCondition = new QLabel(tr("swap total:"));
+    zombiesCondition = new QLabel(tr("Zombies:"));
+    sleepsCondition = new QLabel(tr("Sleeps:"));
+    runsCondition = new QLabel(tr("Running:"));
+
     ramPersentage = new QProgressBar;
     ramPersentage->setMaximum(100);
     ramPersentage->setMinimum(0);
@@ -168,15 +188,27 @@ void mainwindow::createWidgets()
     ramPersentage->setOrientation(Qt::Vertical);
     //set value here
     kill = new QPushButton(tr("Kill a task"));
-    kill->setEnabled(false);
     refreshTask = new QPushButton(tr("Refresh"));
-    refreshTask->setEnabled(false);
     mainLayout->addWidget(cpuPersentage,0, 0, 10, 1);
     mainLayout->addWidget(ramPersentage, 0, 1, 10, 1);
     mainLayout->addWidget(cpuCondition,11, 0, 1, 1);
-    mainLayout->addWidget(ramCondition,21, 1, 1, 1);
+    mainLayout->addWidget(ramCondition,11, 1, 1, 1);
     mainLayout->addWidget(kill, 22, 0, 1, 2);
     mainLayout->addWidget(refreshTask, 23, 0, 1, 2);
+    mainLayout->addWidget(cpuUserCondition, 21, 2, 1, 2);
+    mainLayout->addWidget(cpuSyCondition, 22, 2, 1, 2);
+    mainLayout->addWidget(cpuNiCondition, 23, 2, 1, 2);
+    mainLayout->addWidget(ramUsedCondition, 21, 3, 1, 2);
+    mainLayout->addWidget(ramFreeCondition, 22, 3, 1, 2);
+    mainLayout->addWidget(ramTotalCondition, 23, 3, 1, 2);
+    mainLayout->addWidget(swapUsedCondition, 21, 5, 1, 2);
+    mainLayout->addWidget(swapFreeCondition, 22, 5, 1, 2);
+    mainLayout->addWidget(swapTotalCondition, 23, 5, 1, 2);
+    mainLayout->addWidget(zombiesCondition, 12, 0, 1, 2);
+    mainLayout->addWidget(runsCondition, 13, 0, 1, 2);
+    mainLayout->addWidget(sleepsCondition, 14, 0, 1, 2);
+    connect(kill, SIGNAL(clicked()), this, SLOT(killTasks()));
+    connect(refreshTask, SIGNAL(clicked()), this, SLOT(refreshTasks()));
     taskTable = new QTableView(this);
     taskTable->setEditTriggers(QAbstractItemView::NoEditTriggers);
     //set the none editing mode
@@ -184,20 +216,22 @@ void mainwindow::createWidgets()
     taskTable->setSelectionMode( QAbstractItemView::SingleSelection);
     //choose only one line at one time
     setTableView();
-    mainLayout->addWidget(taskTable, 0, 2, 24, 5);
+    m_nTimerId = startTimer(30000);
+    mainLayout->addWidget(taskTable, 0, 2, 20, 5);
     centralDialog->setLayout(mainLayout);
-
 }
 
 void mainwindow::setTableView()
 {
     model = new QStandardItemModel(taskTable);
     model->clear();
-    model->setColumnCount(4);
-    model->setHeaderData(0,Qt::Horizontal,"   PID   ");
+    model->setColumnCount(6);
+    model->setHeaderData(0,Qt::Horizontal,"   NAME   ");
     model->setHeaderData(1,Qt::Horizontal,"   RAM   ");
     model->setHeaderData(2,Qt::Horizontal,"   CPU   ");
-    model->setHeaderData(3,Qt::Horizontal,"   NAME   ");
+    model->setHeaderData(3,Qt::Horizontal,"   PID   ");
+    model->setHeaderData(4,Qt::Horizontal,"   STATE   ");
+    model->setHeaderData(5,Qt::Horizontal,"   Priority   ");
     headerView = taskTable->horizontalHeader();
     connect(headerView, SIGNAL(sectionClicked(int)),taskTable,SLOT(sortByColumn(int)));
     loadTasks();
@@ -261,17 +295,24 @@ void mainwindow::loadTasks()
     //close the meminfo
     ramUsed = ramTotal-ramFree;
     swapUsed = swapTotal-swapFree;
+    ramPersentage->setValue(ramUsed*100/ramTotal);
+    ramPersentage->text();
+    ramUsedCondition->setText("Ram used: " + QString::number(ramUsed) + "KB");
+    ramFreeCondition->setText("Ram free: " + QString::number(ramFree) + "KB");
+    ramTotalCondition->setText("Ram total:" + QString::number(ramTotal) + "KB");
+    swapUsedCondition->setText("Swap used:" + QString::number(swapUsed) + "KB");
+    swapFreeCondition->setText("swap Free:" + QString::number(swapFree) + "KB");
+    swapTotalCondition->setText("swap free:" + QString::number(swapTotal) + "KB");
     meminfo.close();
 
     //about the condition of cpu
 
     int tt = 2;
-    int cpuInfo[2][7];
-    int cpuTotal[2][2];
-    int cpus[10];
+    int cpuInfo[2][7]={0};
+    int cpuTotal[2][2]={0};
+    int cpus[10] = {0};
+
     QString tempStr;
-    while (tt)
-    {
         stat.setFileName("/proc/stat");
         if ( !stat.open(QIODevice::ReadOnly) )
         {
@@ -279,31 +320,52 @@ void mainwindow::loadTasks()
             return ;
         }
         tempStr = stat.readLine();
+        a0 = a1;
+        b0 = b1;
+        c0 = c1;
+        d0 = d1;
+        e0 = e1;
+        a1 = b1 = c1 = d1 = e1 = 0;
+        int gg;
         for (int i = 0; i < 7; i++)
         {
-            cpuInfo[2-tt][i] = tempStr.section(" ", i+1, i+1).toInt();
-            //count the total
-            cpuTotal[1][2-tt] += cpuInfo[2-tt][i];
+            b1 += tempStr.section(" ", i+2, i+2).toInt();
+            gg = b1;
+            if (i == 0)
+            {
+                c1 += tempStr.section(" ", i+2, i+2).toInt();
+            }
+            else if(i == 1)
+            {
+                d1 += tempStr.section(" ", i+2, i+2).toInt();
+            }
+            else if(i == 2)
+            {
+                e1 += tempStr.section(" ", i+2, i+2).toInt();
+            }
             if (i == 3)
             {
-                //about the idel
-                cpuTotal[0][2-tt] += cpuInfo[2-tt][i];
+                a1 += tempStr.section(" ", i+2, i+2).toInt();
             }
         }
-        tt--;
-        stat.close();
-    }
-//    total_0=USER[0]+NICE[0]+SYSTEM[0]+IDLE[0]+IOWAIT[0]+IRQ[0]+SOFTIRQ[0]
-//    total_1=USER[1]+NICE[1]+SYSTEM[1]+IDLE[1]+IOWAIT[1]+IRQ[1]+SOFTIRQ[1]
-//    cpu usage=(IDLE[0]-IDLE[1]) / (total_0-total_1) * 100
+        int m, n;
+        m = a1 - a0;
+        n = b1 - b0;
+        if (m < 0)
+        {
+            m = -m;
+        }
+        if (n < 0)
+        {
+            n = -n;
+        }
+        stat.close(); //关闭stat文件
 
-    int a = cpuTotal[0][1] - cpuTotal[0][0];
-    int b = cpuTotal[1][1] - cpuTotal[1][0];
-    if (a < 0)
-        a = -a;
-    if (b < 0)
-        b = -b;
-
+    cpuPersentage->setValue(100*(n-m)/n); 
+    cpuPersentage->text();
+    cpuUserCondition->setText("CPU(user):" + QString::number(abs((c1-c0)*100/n)) + "%");
+    cpuSyCondition->setText("CPU(Sy): " + QString::number(abs((e1-e0)*100/n)) + "%");
+    cpuNiCondition->setText("CPU(Ni): " + QString::number(abs((d1-d0)*100/n)) + "%");
 
     if ( !stat.open(QIODevice::ReadOnly) )
     {
@@ -312,7 +374,6 @@ void mainwindow::loadTasks()
     }
 
     tempStr = stat.readLine();
-    cout << tempStr.toStdString();
     int cpu_num = 0;
     while(true)
     {
@@ -323,7 +384,6 @@ void mainwindow::loadTasks()
         {
             cpus[cpu_num] += tempStr.section(" ", i+1, i+1).toInt();
             //count the total
-
         }
         cpu_num++;
     }
@@ -349,7 +409,10 @@ void mainwindow::loadTasks()
     QVector <QString> pidList;
     QVector <QString> proPriList;
     QVector <QString> proMemList;
+    QVector <QString> proStateList;
+//    QVector <QString> ProPr
     QVector <int> proCPUList;
+    int a, b;
     while(1)
     {
 
@@ -388,6 +451,7 @@ void mainwindow::loadTasks()
         proPriList.append(proPri);
         proMemList.append(proMem);
         proNameList.append(proName);
+        proStateList.append(proState);
         proCPUList.append(100*(stime+utime+cs)/cpus[tempStr.section(" ", 40, 40).toInt()]);
 
         switch ( proState.at(0).toLatin1() )
@@ -398,22 +462,28 @@ void mainwindow::loadTasks()
             default :   break;
         }
     }
-
+    zombiesCondition->setText("Zombies" + QString::number(number_of_zombie));
+    sleepsCondition->setText("Sleeps:" + QString::number(number_of_sleep));
+    runsCondition->setText("running:" + QString::number(number_of_run));
 
     model->setRowCount(totalProNum);
     for(int i = 0; i < totalProNum-1; i++)
     {
         //input sth can get the task name and
         //the condition of RAM and CPU
-        QStandardItem *itemPid = new QStandardItem(pidList[i]);
-        model->setItem(i, 0, itemPid);
+        QStandardItem *itemName = new QStandardItem(proNameList[i]);
+        model->setItem(i, 0, itemName);
         QStandardItem *itemRam = new QStandardItem(proMemList[i]);
         model->setItem(i, 1, itemRam);
         QString ss = QString::number(proCPUList[i],10);
         QStandardItem *itemCPU = new QStandardItem(ss);
         model->setItem(i, 2, itemCPU);
-        QStandardItem *itemName = new QStandardItem(proNameList[i]);
-        model->setItem(i, 3, itemName);
+        QStandardItem *itemPid = new QStandardItem(pidList[i]);
+        model->setItem(i, 3, itemPid);
+        QStandardItem *itemPri = new QStandardItem(proPriList[i]);
+        model->setItem(i, 4, itemPri);
+        QStandardItem *itemState = new QStandardItem(proStateList[i]);
+        model->setItem(i, 5, itemState);
     }
 
 
@@ -552,7 +622,29 @@ void mainwindow::optionDisplay()
 
 }
 
+void mainwindow::killTasks()
+{
+    QModelIndex cur = taskTable->currentIndex();
 
+    if(!(cur.row()>=0))
+    {
+        return;
+    }
+    else
+    {
+        //Good!!!!!! It is too better!!
+        QString value = model->item(cur.row(),3)->text();
+        system("kill " + value.toLatin1());
+        cout << value.toStdString() << endl;
+
+    }
+
+}
+
+void mainwindow::refreshTasks()
+{
+    loadTasks();
+}
 
 void mainwindow::about()
 {
@@ -582,4 +674,14 @@ void mainwindow::writeSettings()
 {
     QSettings settings("Software Inc.", "TaskMgr");
     //settings.setValue();
+}
+
+void mainwindow::timerEvent(QTimerEvent *event)
+{
+    loadTasks();
+}
+mainwindow::~mainwindow()
+{
+    if (m_nTimerId != 0 )
+        killTimer(m_nTimerId);
 }

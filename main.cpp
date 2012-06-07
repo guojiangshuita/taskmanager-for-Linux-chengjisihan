@@ -9,7 +9,7 @@ int main(int argc, char* argv[])
     QApplication app(argc, argv);
     QDesktopWidget *desktop = app.desktop();
     QSplashScreen *splash = new QSplashScreen;
-    splash->setPixmap(QPixmap("/home/claude/Icon/4308/splash2.png"));
+    splash->setPixmap(QPixmap("./images/splash2.png"));
     splash->show();
     Qt::Alignment topRight = Qt::AlignRight | Qt::AlignTop;
     splash->showMessage(QObject::tr("Setting up the main window ..."), topRight, Qt::white);

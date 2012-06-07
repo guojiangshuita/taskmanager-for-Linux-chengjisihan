@@ -29,6 +29,18 @@ OTHER_FILES += \
     ../../下载/726/filenew.ico \
     ../../下载/726/help.ico \
     ../../下载/726/info.ico \
-    ../../下载/726/gear.ico
+    ../../下载/726/gear.ico \
+    images/3256.png \
+    images/3257.png \
+    images/3258.png \
+    images/3259.png \
+    images/3260.png \
+    images/3261.png \
+    images/3262.png \
+    images/3263.png \
+    images/3264.png \
+    images/3265.png \
+    images/3266.png \
+    images/3267.png
 
 FORMS +=
