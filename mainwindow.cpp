@@ -361,7 +361,7 @@ void mainwindow::loadTasks()
         }
         stat.close(); //关闭stat文件
 
-    cpuPersentage->setValue(100*(n-m)/n); 
+    cpuPersentage->setValue(100*(n-m)/n);
     cpuPersentage->text();
     cpuUserCondition->setText("CPU(user):" + QString::number(abs((c1-c0)*100/n)) + "%");
     cpuSyCondition->setText("CPU(Sy): " + QString::number(abs((e1-e0)*100/n)) + "%");
