@@ -30,7 +30,7 @@ signals:
 protected:
     void timerEvent(QTimerEvent *event);
     int m_nTimerId;
-    
+
 public slots:
     void restartDrawing();
     void stopDrawing();
