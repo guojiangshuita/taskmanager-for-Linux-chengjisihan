@@ -46,8 +46,8 @@ void newTaskDialog::newTasksClicked()
     QDir cur;
     taskName = new QString(newTaskEdit->text());
     QUrl urls = QUrl::fromLocalFile(cur.absoluteFilePath(*taskName));
+    QDesktopServices::openUrl(urls);
     close();
-
 }
 
 void newTaskDialog::cancelClicked()

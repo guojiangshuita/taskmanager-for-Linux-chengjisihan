@@ -29,7 +29,6 @@ class QStandardItemModel;
 class QTableView;
 class QHeaderView;
 class QString;
-class measureMaker;
 class QFile;
 
 class mainwindow : public QMainWindow
@@ -96,6 +95,7 @@ private:
     QLabel *runsCondition;
     int cpuUsed, cpuTotal, cpuFree, ramUsed, ramTotal, ramFree, swapUsed, swapFree, swapTotal;
     QGridLayout *mainLayout;
+
     QTableView *taskTable;
     QHeaderView *headerView;
     QStandardItemModel *model;
@@ -136,7 +136,6 @@ private:
     newTaskDialog *openedtaskDialog;
     finddialog *finddialoging;
     QString *fileName;
-    measureMaker *mMSet;
     char saveConditionFlags;
 };
 

@@ -2,7 +2,6 @@
 #include <iostream>
 #include <QLabel>
 #include <QPushButton>
-//#include <QScrollBar>
 #include <QMenu>
 #include <QToolBar>
 #include <QAction>
@@ -186,7 +185,6 @@ void mainwindow::createWidgets()
     ramPersentage->setTextVisible(true);
     ramPersentage->setTextDirection(QProgressBar::BottomToTop);
     ramPersentage->setOrientation(Qt::Vertical);
-    //set value here
     kill = new QPushButton(tr("Kill a task"));
     refreshTask = new QPushButton(tr("Refresh"));
     mainLayout->addWidget(cpuPersentage,0, 0, 10, 1);
@@ -216,7 +214,7 @@ void mainwindow::createWidgets()
     taskTable->setSelectionMode( QAbstractItemView::SingleSelection);
     //choose only one line at one time
     setTableView();
-    m_nTimerId = startTimer(30000);
+    m_nTimerId = startTimer(100000);
     mainLayout->addWidget(taskTable, 0, 2, 20, 5);
     centralDialog->setLayout(mainLayout);
 }
@@ -382,7 +380,7 @@ void mainwindow::loadTasks()
             break;
         for (int i = 0; i < 7; i++)
         {
-            cpus[cpu_num] += tempStr.section(" ", i+1, i+1).toInt();
+            cpus[cpu_num] += tempStr.section(" ", i+2, i+2).toInt();
             //count the total
         }
         cpu_num++;
@@ -461,6 +459,7 @@ void mainwindow::loadTasks()
             case 'Z':   number_of_zombie++; break; //Zombie
             default :   break;
         }
+        stat.close();
     }
     zombiesCondition->setText("Zombies" + QString::number(number_of_zombie));
     sleepsCondition->setText("Sleeps:" + QString::number(number_of_sleep));
@@ -529,6 +528,7 @@ void mainwindow::newTask()
     openedtaskDialog->show();
     openedtaskDialog->raise();
     openedtaskDialog->activateWindow();
+
 }
 
 void mainwindow::open()
@@ -593,13 +593,10 @@ void mainwindow::sorts()
 
 void mainwindow::measureMaker_activate()
 {
-    mMSet=new measureMaker(this);
-    if(saveConditionFlags=='L')
-    {
-        mMSet->setInputFiles(curFile);
-        mMSet->show();
-    }
-
+    measureMaker *mMSet = new measureMaker(this);
+    mMSet->show();
+    mMSet->raise();
+    mMSet->activateWindow();
 }
 
 void mainwindow::superKiller_activate()
@@ -635,8 +632,6 @@ void mainwindow::killTasks()
         //Good!!!!!! It is too better!!
         QString value = model->item(cur.row(),3)->text();
         system("kill " + value.toLatin1());
-        cout << value.toStdString() << endl;
-
     }
 
 }
