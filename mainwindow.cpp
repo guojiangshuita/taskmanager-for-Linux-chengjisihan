@@ -27,6 +27,8 @@
 #include "spreadsheet.h"
 #include "newtaskdialog.h"
 #include <math.h>
+#include <QDesktopWidget>
+#include <QApplication>
 
 
 
@@ -54,6 +56,8 @@ mainwindow::mainwindow()
     d1=0;
     e0=0;
     e1=0;
+    internCpu1 = 0;
+    internCpu2 = 0;
     createActions();
     createMenus();
     createToolBar();
@@ -223,17 +227,18 @@ void mainwindow::setTableView()
 {
     model = new QStandardItemModel(taskTable);
     model->clear();
-    model->setColumnCount(6);
+    model->setColumnCount(5);
     model->setHeaderData(0,Qt::Horizontal,"   NAME   ");
     model->setHeaderData(1,Qt::Horizontal,"   RAM   ");
-    model->setHeaderData(2,Qt::Horizontal,"   CPU   ");
-    model->setHeaderData(3,Qt::Horizontal,"   PID   ");
-    model->setHeaderData(4,Qt::Horizontal,"   STATE   ");
-    model->setHeaderData(5,Qt::Horizontal,"   Priority   ");
+//    model->setHeaderData(2,Qt::Horizontal,"   CPU   ");
+    model->setHeaderData(2,Qt::Horizontal,"   PID   ");
+    model->setHeaderData(3,Qt::Horizontal,"   STATE   ");
+    model->setHeaderData(4,Qt::Horizontal,"   Priority   ");
     headerView = taskTable->horizontalHeader();
     connect(headerView, SIGNAL(sectionClicked(int)),taskTable,SLOT(sortByColumn(int)));
     loadTasks();
     taskTable->setModel(model);
+    taskTable->resizeColumnsToContents();
 }
 
 void mainwindow::loadTasks()
@@ -450,7 +455,9 @@ void mainwindow::loadTasks()
         proMemList.append(proMem);
         proNameList.append(proName);
         proStateList.append(proState);
-        proCPUList.append(100*(stime+utime+cs)/cpus[tempStr.section(" ", 40, 40).toInt()]);
+        internCpu1 = internCpu2;
+        internCpu2 = stime+utime+cs;
+        proCPUList.append(cpu_num*100*abs((internCpu2-internCpu1)/n));
 
         switch ( proState.at(0).toLatin1() )
         {
@@ -475,16 +482,16 @@ void mainwindow::loadTasks()
         QStandardItem *itemRam = new QStandardItem(proMemList[i]);
         model->setItem(i, 1, itemRam);
         QString ss = QString::number(proCPUList[i],10);
-        QStandardItem *itemCPU = new QStandardItem(ss);
-        model->setItem(i, 2, itemCPU);
+//        QStandardItem *itemCPU = new QStandardItem(ss);
+//        model->setItem(i, 2, itemCPU);
         QStandardItem *itemPid = new QStandardItem(pidList[i]);
-        model->setItem(i, 3, itemPid);
+        model->setItem(i, 2, itemPid);
         QStandardItem *itemPri = new QStandardItem(proPriList[i]);
-        model->setItem(i, 4, itemPri);
+        model->setItem(i, 3, itemPri);
         QStandardItem *itemState = new QStandardItem(proStateList[i]);
-        model->setItem(i, 5, itemState);
+        model->setItem(i, 4, itemState);
     }
-
+    taskTable->resizeColumnsToContents();
 
 }
 
@@ -593,7 +600,9 @@ void mainwindow::sorts()
 
 void mainwindow::measureMaker_activate()
 {
+    QDesktopWidget *desktop = QApplication::desktop();
     measureMaker *mMSet = new measureMaker(this);
+    mMSet->move(desktop->width()/2-mMSet->width()/2, desktop->height()/2-mMSet->height()/2);
     mMSet->show();
     mMSet->raise();
     mMSet->activateWindow();

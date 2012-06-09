@@ -111,6 +111,7 @@ private:
     QStringList recentFiles;
     QString curFile;
     int a0, a1, b0, b1, c0, c1, d0, d1, e0, e1;
+    int internCpu1, internCpu2;
     enum {MaxRecentFiles = 5};
     QAction *separatorAction;
     QAction *openAction;

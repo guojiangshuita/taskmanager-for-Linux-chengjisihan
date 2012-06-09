@@ -2,6 +2,7 @@
 #define MEASUREMAKER_H
 
 #include <QDialog>
+#include <QVector>
 
 class QwtPlotCurve;
 class QLabel;
@@ -24,6 +25,7 @@ class measureMaker : public QDialog
 public:
     explicit measureMaker(QWidget *parent = 0);
     QString outputFile;
+    virtual ~measureMaker();
     char flags;
 signals:
 
@@ -34,7 +36,6 @@ protected:
 public slots:
     void restartDrawing();
     void stopDrawing();
-    void timerStart();
     void returnToSuper();
     void saveClicked();
     void openClicked();
@@ -46,6 +47,7 @@ private:
     void initTableView();
     QwtPlotCurve *cpuCurve;
     QwtPlotCurve *ramCurve;
+    QwtPlotCurve *totalCurve;
     QwtPlot *conditionPlot;
     QSlider *timeSlider;
     QString inputFile;
@@ -57,7 +59,22 @@ private:
     QPushButton *openPushButton;
     QPushButton *returnPushButton;
     QPushButton *refreshPushButton;
+    QLabel *currentTask;
+    QString internproName;
     QTableView *taskTable;
+    int currentPid;
+    bool savingFlags;
+    int timerGoing;
+    int internCpu1;
+    int internCpu2;
+    int internTotal1;
+    int internTotal2;
+    int internTimes;
+    QVector <double> drawingCpus;
+    QVector <double> drawingRams;
+    QVector <double> drawingTotals;
+    QVector <double> timesUsed;
+
     QStandardItemModel *model;
     QHeaderView *headerView;
     QTimer *timer;
