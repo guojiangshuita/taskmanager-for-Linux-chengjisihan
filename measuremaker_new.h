@@ -2,6 +2,7 @@
 #define MEASUREMAKER_H
 
 #include <QDialog>
+#include <QVector>
 
 class QwtPlotCurve;
 class QLabel;
@@ -13,46 +14,70 @@ class QGridLayout;
 class QSlider;
 class QSpinBox;
 class QVBoxLayout;
-class QListView;
+class QHBoxLayout;
+class QTableView;
+class QStandardItemModel;
+class QHeaderView;
 
 class measureMaker : public QDialog
 {
     Q_OBJECT
 public:
     explicit measureMaker(QWidget *parent = 0);
-    void setInputFiles(QString input);
-    void setSavingCondition(char c);
     QString outputFile;
+    virtual ~measureMaker();
     char flags;
 signals:
 
 protected:
+    void timerEvent(QTimerEvent *event);
+    int m_nTimerId;
 
-    
 public slots:
     void restartDrawing();
     void stopDrawing();
-    void timerStart();
+    void returnToSuper();
+    void saveClicked();
+    void openClicked();
+    void RefreshClicked();
 private:
+    void loadTasks();
     void initTimerMaker();
     void initPlotCurve();
-    void initListView();
+    void initTableView();
     QwtPlotCurve *cpuCurve;
     QwtPlotCurve *ramCurve;
+    QwtPlotCurve *totalCurve;
     QwtPlot *conditionPlot;
     QSlider *timeSlider;
     QString inputFile;
     QLabel *labelTime;
     QSpinBox *timeSpinBox;
-    QVBoxLayout *timerLayout;
-    QVBoxLayout *mainLayout;
     QPushButton *timeGet;
     QPushButton *stopTimeGet;
-    QListView *taskList;
-    QPushButton *refreshButton;
+    QPushButton *savePushButton;
+    QPushButton *openPushButton;
+    QPushButton *returnPushButton;
+    QPushButton *refreshPushButton;
+    QLabel *currentTask;
+    QString internproName;
+    QTableView *taskTable;
+    int currentPid;
+    bool savingFlags;
+    int timerGoing;
+    int internCpu1;
+    int internCpu2;
+    int internTotal1;
+    int internTotal2;
+    int internTimes;
+    QVector <double> drawingCpus;
+    QVector <double> drawingRams;
+    QVector <double> drawingTotals;
+    QVector <double> timesUsed;
+
+    QStandardItemModel *model;
+    QHeaderView *headerView;
     QTimer *timer;
-    bool canBeSaved;
-    char savingCondition;
 };
 
 #endif // MEASUREMAKER_H
